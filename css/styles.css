@@ -1,6 +1,7 @@
 th,h1,h2,tbody,td,tr{
     font-family: sans-serif;
 }
+
 #tablalistado{
     max-height: 50%;
     width: 100%;
@@ -12,11 +13,13 @@ th,h1,h2,tbody,td,tr{
     width: 100%;
     font-size: larger;
 }
+
 .escanear{
     width: calc(100% - 8px);
     font-size: xx-large;
     height: 40px;
 }
+
 .encabezado {
     text-align: center;
     align-items: center;
@@ -24,12 +27,15 @@ th,h1,h2,tbody,td,tr{
     border-radius: 15px;
     margin: 5px;
 }
+
 .titulo1{
    margin: 0; 
 }
+
 .subtitulo1{
     margin: 0;
 }
+
 .logoizq{
     width: 100%;
     max-width: 60px;
@@ -38,6 +44,7 @@ th,h1,h2,tbody,td,tr{
     position: absolute;
         top: 10px;
 }
+
 .logoder{
     width: 100%;
     max-width: 60px;
@@ -47,6 +54,7 @@ th,h1,h2,tbody,td,tr{
     right: 0;
     top: 10px;
 }
+
 .listaproductos{
     font-size: x-large;
     height: 60vh;
@@ -55,10 +63,12 @@ th,h1,h2,tbody,td,tr{
     border: 1px solid black;
 
 }
+
 .botones{
     display: flex;
     align-items: center;
 }
+
 .btn{
     height: 15vh;
     width: 20vh;
@@ -66,4 +76,56 @@ th,h1,h2,tbody,td,tr{
     background-repeat: no-repeat;
     background-position: center;
     cursor: pointer;
+}
+
+#boton1{
+    background-image: url(../images/carrito.png);
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 10px;
+}
+
+#boton2{
+    background-image: url(../images/foto1.jpg);
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 10px;
+}
+
+#boton3{
+    background-image: url(../images/efectivo.png);
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 10px;
+}
+
+#boton4{
+    background-image: url(../images/tarjeta.jpeg);
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 10px;
+}
+
+#boton5{
+    background-image: url(../images/telefono.jpeg);
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 10px;
+}
+
+.total{
+    display: flex;
+    border: 2px solid black;
+    width: 30%;
+    height: 5dvw;
+    margin-left: auto;
+    font-size: xx-large;
+    align-items: center;
+    justify-content: center;
+    
 }
