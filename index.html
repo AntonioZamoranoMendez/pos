@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Punto de Venta</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="js/functions.js"></script>
 </head>
 <body>
     <!-- Logo -->
     <img src="images/fondo1.jpg" alt="logo1" class="logoizq">
-    <!-- Titulo -->
+    <!-- Titulo --> 
     <div class="encabezado">           
             <h1 class="titulo1">El Polinesio</h1> 
             <h2 class="subtitulo">¡El verdadero Calidad, Precio!</h2>
@@ -31,7 +32,7 @@
         </table>
     </div>
     <!-- Input para productos -->
-    <input type="text" id="txtcodigo" class="escanear" placeholder="Escanee aquí..">
+    <input type="text" id="txtcodigo" onkeydown="buscarProducto(event)" class="escanear" placeholder="Escanee aquí..">
      <!-- Botones -->
     <div class="botones">
         <input type="button" id="boton1" class="btn">
@@ -39,11 +40,8 @@
         <input type="button" id="boton3" class="btn">
         <input type="button" id="boton4" class="btn">
         <input type="button" id="boton5" class="btn">
-        <!-- Total -->
-        <h1 class="total">$ 0.00</h1>
+        <h1 id="total" class="total">$ 0.00</h1>
     </div>
-
-
-
 </body>
 </html>
+
