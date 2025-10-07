@@ -151,12 +151,40 @@ function buscarProducto(evento){
             // Borrar la fila
             borrar.removeChild(ultimaFila);
 
-            // Actualizar el total en pantalla
+            // Actualizar total en
             document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+
         }
+    } else if (evento.key === "Tab") {
+    evento.preventDefault(); // Evita que el navegador cambie de foco
+
+    var tabla = document.getElementById("tablacontenido");
+    var numFilas = tabla.rows.length;
+
+    if (numFilas > 0) {
+        var fila = tabla.rows[numFilas - 1];
+
+        // Obtener y aumentar la cantidad
+        var cantidad = parseInt(fila.cells[0].innerHTML);
+        cantidad += 1;
+        fila.cells[0].innerHTML = cantidad;
+
+        // Obtener el precio unitario
+        var precioUnitario = parseFloat(fila.cells[2].innerHTML);
+
+        // Calcular el nuevo subtotal
+        var nuevoSubtotal = precioUnitario * cantidad;
+        fila.cells[3].innerHTML = nuevoSubtotal.toFixed(2);
+
+        // Sumar el precio unitario al total
+        total += precioUnitario;
+
+        // Actualizar el total mostrado
+        document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+    }
+
     }
 }
-
 
 
 
