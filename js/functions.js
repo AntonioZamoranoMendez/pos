@@ -103,6 +103,7 @@ const productos = [
 ];
 
 function buscarProducto(evento){
+
     if (evento.key === "Enter"){
         var codigo = document.getElementById("txtcodigo").value;
         if (codigo.length > 0){
@@ -135,5 +136,31 @@ function buscarProducto(evento){
                 break;                
             }            
         }
+    } else if (evento.key === "Escape") {
+        let borrar = document.getElementById("tablacontenido");
+
+        // Verificar que existe al menos una fila para borrar
+        if (borrar.lastChild) {
+            // Obtener el subtotal de la última fila antes de borrarla
+            var ultimaFila = borrar.lastChild;
+            var subtotal = parseFloat(ultimaFila.cells[3].innerHTML);
+
+            // Restar el subtotal del total
+            total -= subtotal;
+
+            // Borrar la fila
+            borrar.removeChild(ultimaFila);
+
+            // Actualizar el total en pantalla
+            document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+        }
     }
 }
+
+
+
+
+
+
+
+
