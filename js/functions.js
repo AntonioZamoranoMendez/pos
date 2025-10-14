@@ -422,8 +422,8 @@ function modalCupones() {  // Función para mostrar modal de cupones
     };
 }
 
-function modalDesestres() {
-    const modal = document.getElementById("modal-cupones"); // Puedes usar otro modal si quieres
+function modalDesestres() {   // Función para mostrar modal de desestrés
+    const modal = document.getElementById("modal-desestres");
     modal.innerHTML = `
         <div style="
             position: fixed; top:0; left:0; width:100%; height:100%;
@@ -444,7 +444,7 @@ function modalDesestres() {
     };
 }
 
-function retirarEfectivo() {
+function retirarEfectivo() {   // Función para mostrar modal de retiro
     const modal = document.getElementById("modal-retiro");
 
     // Creamos contenido del modal
@@ -497,6 +497,42 @@ function retirarEfectivo() {
     };
 }
 
+function llamarEmergencias() {
+    const modal = document.getElementById("modal-emergencia");
+
+    // Creamos contenido del modal
+    modal.innerHTML = `
+        <div style="
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+            <div id="contenidoEmergencia" style="position:relative; background:white; padding:20px; border-radius:10px; width:350px; text-align:center;">
+                <h3>Llamando a emergencias...</h3>
+                <p id="contadorEmergencia">5</p>
+                <button id="btnCancelarEmergencia" style="padding:8px 16px; background:#dc3545; color:white; border:none; border-radius:5px; cursor:pointer;">Cancelar</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = "block";
+
+    let tiempo = 5;
+    const contador = document.getElementById("contadorEmergencia");
+
+    const intervalo = setInterval(() => {
+        tiempo--;
+        contador.innerText = tiempo;
+        if (tiempo <= 0) {
+            clearInterval(intervalo);
+            modal.style.display = "none";
+            alert("🚨 Autoridades en camino!");
+        }
+    }, 1000);
+
+    document.getElementById("btnCancelarEmergencia").onclick = function() {
+        clearInterval(intervalo);
+        modal.style.display = "none";
+        alert("Emergencia cancelada.");
+    };
+}
 
     // Listener de teclado global
 
