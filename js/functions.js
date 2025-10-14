@@ -1,5 +1,7 @@
 var total = 0.00;
-const productos = [
+var montoDeposito = 0.00; // Variable global para almacenar el monto del depósito
+
+const PRODUCTOS= [     // Array de Productos
   ["001", "Sabritas Clásicas", 27.45],
   ["002", "Doritos Nacho", 34.20],
   ["003", "Ruffles Queso", 41.37],
@@ -99,81 +101,65 @@ const productos = [
   ["097", "Pan Molido", 14.40],
   ["098", "Gelatina D'Gari", 9.99],
   ["099", "Mayonesa Heinz", 25.50],
-  ["100", "Salsa Valentina", 13.30]
+  ["100", "Salsa Valentina", 13.30],
+  ["101", "Depósito", montoDeposito]  // Código especial para depósitos
 ];
 
-function buscarProducto(evento) {
-        // agregar producto a la tabla
+function buscarProducto(evento) {    // Función para cuando se escanee o escriba un código
     if (evento.key === "Enter") {
         var codigo = document.getElementById("txtcodigo").value;
         if (codigo.length > 0) {
-            var cantidad = "1";
-            if (codigo.indexOf("*") != -1) {
-                cantidad = codigo.split("*")[0];
-                codigo = codigo.split("*")[1];
-            }
+            agregarALaTabla(codigo);
         }
+    }
+}
 
-        for (let i = 0; i < productos.length; i++) {
-            if (productos[i][0] == codigo) {
-                var tabla = document.getElementById("tablacontenido");
-                var renglon = tabla.insertRow();
-                var celda1 = renglon.insertCell(0);
-                var celda2 = renglon.insertCell(1);
-                var celda3 = renglon.insertCell(2);
-                var celda4 = renglon.insertCell(3);
-                celda1.style.textAlign = "center";
-                celda2.style.textAlign = "center";
-                celda3.style.textAlign = "right";
-                celda4.style.textAlign = "right";
-                celda1.innerHTML = cantidad;
-                celda2.innerHTML = productos[i][1];
-                celda3.innerHTML = productos[i][2];
-                celda4.innerHTML = (productos[i][2] * cantidad).toFixed(2);
-                document.getElementById("txtcodigo").value = "";
-                total += productos[i][2] * cantidad;  // por si cantidad es diferente a 1
-                document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+function agregarALaTabla(codigo) {  // Función para agregar a la tabla
+    var cantidad = "1";
+    if (codigo.indexOf("*") != -1) {
+        cantidad = codigo.split("*")[0];
+        codigo = codigo.split("*")[1];
+    }
+
+      //  Si es depósito, actualizamos su monto en el array antes de insertarlo
+    if (codigo === "101") {
+        for (let i = 0; i < PRODUCTOS.length; i++) {
+            if (PRODUCTOS[i][0] === "101") {
+                PRODUCTOS[i][2] = montoDeposito; // aquí se actualiza dinámicamente
                 break;
             }
         }
+    }
 
-    } else if (evento.key === "Escape") {
-        let tabla = document.getElementById("tablacontenido");
-        if (tabla.rows.length > 0) {
-            var ultimaFila = tabla.rows[tabla.rows.length - 1];
-            var subtotal = parseFloat(ultimaFila.cells[3].innerHTML);
-            total -= subtotal;
-            tabla.deleteRow(tabla.rows.length - 1);
+    for (let i = 0; i < PRODUCTOS.length; i++) {
+        if (PRODUCTOS[i][0] == codigo) {
+            var tabla = document.getElementById("tablacontenido");
+            var renglon = tabla.insertRow();
+            var celda1 = renglon.insertCell(0);                
+            var celda2 = renglon.insertCell(1);
+            var celda3 = renglon.insertCell(2);
+            var celda4 = renglon.insertCell(3);
+            celda1.style.textAlign = "center";
+            celda2.style.textAlign = "center";                
+            celda3.style.textAlign = "right";
+            celda4.style.textAlign = "right";
+            celda1.innerHTML = cantidad;
+            celda2.innerHTML = PRODUCTOS[i][1];
+            celda3.innerHTML = PRODUCTOS[i][2];                
+            celda4.innerHTML = (PRODUCTOS[i][2] * cantidad).toFixed(2);
+            document.getElementById("txtcodigo").value = "";
+            total += PRODUCTOS[i][2] * cantidad;  // por si cantidad es diferente a 1
             document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+            break;
         }
+    }
+}
 
-    } else if (evento.key === "Tab") {
-        evento.preventDefault();
-        var tabla = document.getElementById("tablacontenido");
-        var numFilas = tabla.rows.length;
-        if (numFilas > 0) {
-            var fila = tabla.rows[numFilas - 1];
-            var cantidad = parseInt(fila.cells[0].innerHTML);
-            cantidad += 1;
-            fila.cells[0].innerHTML = cantidad;
-            var precioUnitario = parseFloat(fila.cells[2].innerHTML);
-            var nuevoSubtotal = precioUnitario * cantidad;
-            fila.cells[3].innerHTML = nuevoSubtotal.toFixed(2);
-            total += precioUnitario;
-            document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
-        }
+function actualizarTotal() {   // Función para actualizar el total
+    document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+}
 
-    } else if (evento.key.toLowerCase() === "c") {
-        evento.preventDefault();
-        var tabla = document.getElementById("tablacontenido");
-        if (tabla.rows.length > 0) {
-            mostrarModalClave();
-        }
-    }  else if (evento.key.toLowerCase() === "p") {
-    evento.preventDefault();
-    const tabla = document.getElementById("tablacontenido");
-    if (tabla.rows.length === 0) return;
-
+function cerrarVenta() {     // Función para cerrar venta
     const input = document.getElementById("txtcodigo");
     input.value = "";
     input.placeholder = "Ingrese pago";
@@ -206,146 +192,154 @@ function buscarProducto(evento) {
     };
 }
 
-    // === Modal para pedir clave ===
-    function mostrarModalClave() {
-        var overlay = document.createElement("div");
-        overlay.style.cssText = `
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.5);display:flex;
-            justify-content:center;align-items:center;z-index:9999;
-        `;
-
-        var modal = document.createElement("div");
-        modal.style.cssText = `
-            background:white;padding:20px 30px;border-radius:10px;
-            text-align:center;font-family:sans-serif;
-        `;
-
-        modal.innerHTML = `
-            <h3>Ingrese la clave de administrador</h3>
-            <input type="password" id="inputClave" placeholder="Clave" 
-                style="padding:8px;width:250px;margin-bottom:15px;border:1px solid #ccc;border-radius:5px;text-align:center;">
-            <div>
-                <button id="btnAceptar" style="padding:8px 20px;background:#007bff;color:white;border:none;border-radius:5px;margin-right:10px;">Aceptar</button>
-                <button id="btnCancelar" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:5px;">Cancelar</button>
-            </div>
-        `;
-
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-        document.getElementById("inputClave").focus();
-
-        document.getElementById("btnAceptar").onclick = function () {
-            var clave = document.getElementById("inputClave").value.trim();
-            document.body.removeChild(overlay);
-            verificarClave(clave);
-        };
-
-        document.getElementById("btnCancelar").onclick = function () {
-            document.body.removeChild(overlay);
-        };
-
-        document.getElementById("inputClave").addEventListener("keypress", function (e) {
-            if (e.key === "Enter") document.getElementById("btnAceptar").click();
-        });
-    }
-
-    // === Verificar la clave ingresada ===
-    function verificarClave(clave) {
-        const CLAVE_CORRECTA = "123456"; // cambiar aquí
-        if (clave === CLAVE_CORRECTA) {
-            mostrarModalConfirmacion();
-        } else {
-            mostrarModalMensaje("Clave incorrecta. Intente de nuevo.");
-        }
-    }
-
-    // === Modal para confirmar cancelación ===
-    function mostrarModalConfirmacion() {
-        var overlay = document.createElement("div");
-        overlay.style.cssText = `
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.5);display:flex;
-            justify-content:center;align-items:center;z-index:9999;
-        `;
-
-        var modal = document.createElement("div");
-        modal.style.cssText = `
-            background:white;padding:20px 30px;border-radius:10px;
-            text-align:center;font-family:sans-serif;
-        `;
-
-        modal.innerHTML = `
-            <h3>¿Desea cancelar la venta actual?</h3>
-            <div>
-                <button id="btnSi" style="padding:8px 20px;background:#dc3545;color:white;border:none;border-radius:5px;margin-right:10px;">Sí, cancelar</button>
-                <button id="btnNo" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:5px;">No</button>
-            </div>
-        `;
-
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-
-        document.getElementById("btnSi").onclick = function () {
-            document.body.removeChild(overlay);
-            limpiarTabla();
-            mostrarModalMensaje("🧾 Venta cancelada correctamente.");
-        };
-
-        document.getElementById("btnNo").onclick = function () {
-            document.body.removeChild(overlay);
-        };
-    }
-
-    // === Modal simple para mostrar mensajes ===
-    function mostrarModalMensaje(texto) {
-        var overlay = document.createElement("div");
-        overlay.style.cssText = `
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.4);display:flex;
-            justify-content:center;align-items:center;z-index:9999;
-        `;
-
-        var modal = document.createElement("div");
-        modal.style.cssText = `
-            background:white;padding:20px 30px;border-radius:10px;
-            text-align:center;font-family:sans-serif;
-        `;
-        modal.innerHTML = `
-            <p style="margin-bottom:15px;">${texto}</p>
-            <button id="btnCerrar" style="padding:6px 15px;background:#007bff;color:white;border:none;border-radius:5px;">OK</button>
-        `;
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-
-        document.getElementById("btnCerrar").onclick = function () {
-            document.body.removeChild(overlay);
-        };
-    }
-
-    // === Limpiar tabla y total ===
-    function limpiarTabla() {
-        var tabla = document.getElementById("tablacontenido");
-        while (tabla.rows.length > 0) {
-            tabla.deleteRow(0);
-        }
-        total = 0.00;
-        document.getElementById("total").innerText = "Total: $0.00";
-    }
-function cierreVenta() {
-    const input = document.getElementById("txtcodigo");
-    input.placeholder = "Ingrese pago";
-    input.focus();
+function mostrarModalClave() {    //  Modal para pedir clave de administrador
+    var overlay = document.createElement("div");
+    overlay.style.cssText = `
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:rgba(0,0,0,0.5);display:flex;
+        justify-content:center;align-items:center;z-index:9999;
+    `;
+    var modal = document.createElement("div");
+    modal.style.cssText = `
+        background:white;padding:20px 30px;border-radius:10px;
+        text-align:center;font-family:sans-serif;
+    `;
+    modal.innerHTML = `
+        <h3>Ingrese la clave de administrador</h3>
+        <input type="password" id="inputClave" placeholder="Clave" 
+            style="padding:8px;width:250px;margin-bottom:15px;border:1px solid #ccc;border-radius:5px;text-align:center;">
+        <div>
+            <button id="btnAceptar" style="padding:8px 20px;background:#007bff;color:white;border:none;border-radius:5px;margin-right:10px;">Aceptar</button>
+            <button id="btnCancelar" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:5px;">Cancelar</button>
+        </div>
+    `;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.getElementById("inputClave").focus();
+    document.getElementById("btnAceptar").onclick = function () {
+        var clave = document.getElementById("inputClave").value.trim();
+        document.body.removeChild(overlay);
+        verificarClave(clave);
+    };
+    document.getElementById("btnCancelar").onclick = function () {
+        document.body.removeChild(overlay);
+    };
+    document.getElementById("inputClave").addEventListener("keypress", function (e) {
+        if (e.key === "Enter") document.getElementById("btnAceptar").click();
+    });
 }
+ 
+function verificarClave(clave) {    // Función para Verificar la clave ingresada
+    const CLAVE_CORRECTA = "123456"; // cambiar aquí
+    if (clave === CLAVE_CORRECTA) {
+        mostrarModalConfirmacion();
+    } else {
+        mostrarModalMensaje("Clave incorrecta. Intente de nuevo.");
+    }
 }
-// === Listener de botón4 ===
-document.getElementById("boton4").addEventListener("click", function(){
-    depositar();
-});
 
-// === Modal de tarjeta ===
-function depositar() {
+function mostrarModalConfirmacion() {   // Modal para confirmar cancelación
+    var overlay = document.createElement("div");
+    
+    overlay.style.cssText = `
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:rgba(0,0,0,0.5);display:flex;
+        justify-content:center;align-items:center;z-index:9999;
+    `;
+
+    var modal = document.createElement("div");
+    modal.style.cssText = `
+        background:white;padding:20px 30px;border-radius:10px;
+        text-align:center;font-family:sans-serif;
+    `;
+
+    modal.innerHTML = `
+        <h3>¿Desea cancelar la venta actual?</h3>
+        <div>
+            <button id="btnSi" style="padding:8px 20px;background:#dc3545;color:white;border:none;border-radius:5px;margin-right:10px;">Sí, cancelar</button>
+            <button id="btnNo" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:5px;">No</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.getElementById("btnSi").onclick = function () {
+        document.body.removeChild(overlay);
+        limpiarTabla();
+        mostrarModalMensaje("🧾 Venta cancelada correctamente.");
+    };
+    document.getElementById("btnNo").onclick = function () {
+        document.body.removeChild(overlay);
+    };
+}
+
+function mostrarModalMensaje(texto) {    // Modal simple para mostrar mensajes
+    var overlay = document.createElement("div");
+
+    overlay.style.cssText = `
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:rgba(0,0,0,0.4);display:flex;
+        justify-content:center;align-items:center;z-index:9999;
+    `;
+
+    var modal = document.createElement("div");
+    modal.style.cssText = `
+        background:white;padding:20px 30px;border-radius:10px;
+        text-align:center;font-family:sans-serif;
+    `;
+
+    modal.innerHTML = `
+        <p style="margin-bottom:15px;">${texto}</p>
+        <button id="btnCerrar" style="padding:6px 15px;background:#007bff;color:white;border:none;border-radius:5px;">OK</button>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.getElementById("btnCerrar").onclick = function () {
+        document.body.removeChild(overlay);
+    };
+}
+
+function limpiarTabla() {    //  Función para Limpiar tabla y total
+    var tabla = document.getElementById("tablacontenido");
+    while (tabla.rows.length > 0) {
+        tabla.deleteRow(0);
+    }
+    total = 0.00;
+    actualizarTotal();
+}
+
+function validarNumerosYMonto(valor, valor2) {  // Función para validar números y e ingresar monto
+     if (valor !== valor2) {
+            alert("⚠️ Los números no coinciden.");
+            input.focus();
+            return;
+    }else if(valor.length != 16 || isNaN(valor) || valor === "" || valor2.length != 16 || isNaN(valor2) || valor2 === "") {
+        alert("⚠️ Ingrese un número de tarjeta válido.");
+        input.focus();
+        return;
+    } else if (valor === valor2){
+        let monto = prompt("Ingrese el monto a depositar (máximo $5000):");
+        monto = parseFloat(monto);
+
+        if (isNaN(monto) || monto <= 0) {
+            alert("⚠️ Monto inválido.");
+            return;
+        } else if (monto > 5000) {
+            alert("⚠️ El monto máximo permitido es $5000.");
+            return;
+        }
+        montoDeposito = monto; // Asignar el monto a la variable global
+        alert("✅ Depósito aceptado: $" + monto.toFixed(2));
+    }
+    
+    document.getElementById("modal-tarjeta").style.display = "none";
+    agregarALaTabla("101"); // Código para depósito
+}
+
+function depositar() {    // Función para Depositar
     const modal = document.getElementById("modal-tarjeta");
+
     modal.innerHTML = `
         <div style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
             <div style="background:white; padding:20px 30px; border-radius:10px; text-align:center; width:300px;">
@@ -365,47 +359,66 @@ function depositar() {
     document.getElementById("btnAceptarTarjeta").onclick = function() {
         const valor = input.value.trim();
         const valor2 = document.getElementById("inputTarjeta2").value.trim();
-        if (valor !== valor2) {
-            alert("⚠️ Los números no coinciden.");
-            input.focus();
-            return;
-        }else if(valor.length != 16 || isNaN(valor) || valor === "" || valor2.length != 16 || isNaN(valor2) || valor2 === "") {
-            alert("⚠️ Ingrese un número de tarjeta válido.");
-            input.focus();
-            return;
-        } else if (valor === valor2){
-             let monto = prompt("Ingrese el monto a depositar (máximo $5000):");
-    monto = parseFloat(monto);
 
-    if (isNaN(monto) || monto <= 0) {
-        alert("⚠️ Monto inválido.");
-        return;
-    } else if (monto > 5000) {
-        alert("⚠️ El monto máximo permitido es $5000.");
-        return;
-    }
-
-    alert("✅ Depósito aceptado: $" + monto.toFixed(2));
-     var tabla = document.getElementById("tablacontenido");
-                var renglon = tabla.insertRow();
-                var celda1 = renglon.insertCell(0);
-                var celda2 = renglon.insertCell(1);
-                var celda3 = renglon.insertCell(2);
-                var celda4 = renglon.insertCell(3);
-                celda1.style.textAlign = "center";
-                celda2.style.textAlign = "center";
-                celda3.style.textAlign = "right";
-                celda4.style.textAlign = "right";
-                celda1.innerHTML = 1;
-                celda2.innerHTML = "Depósito";
-                celda3.innerHTML = monto.toFixed(2);
-                celda4.innerHTML = monto.toFixed(2);
-                document.getElementById("txtcodigo").value = "";
-                total += monto; 
-                document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
-    modal.style.display = "none";
-        }
-        
-       // modal.style.display = "none";
+        validarNumerosYMonto(valor, valor2);
     };
 }
+
+    // Listener de teclado global
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        let tabla = document.getElementById("tablacontenido");
+        if (tabla.rows.length > 0) {
+            var ultimaFila = tabla.rows[tabla.rows.length - 1];
+            let nombreProducto = ultimaFila.cells[1].innerText.trim().toLowerCase();
+            let cantidadDeposito = parseInt(ultimaFila.cells[0].innerText);
+            var subtotal = parseFloat(ultimaFila.cells[3].innerHTML);
+            if (nombreProducto === "depósito" || nombreProducto === "deposito") {
+                // Si es depósito, restamos el monto real del depósito
+                total -= montoDeposito*cantidadDeposito;
+                montoDeposito = 0.00; // reseteamos
+            } else {
+                // Si es producto normal
+                total -= subtotal;
+            }
+            tabla.deleteRow(tabla.rows.length - 1);
+            actualizarTotal();
+        }
+
+    } else if (event.key === "Tab") {
+        event.preventDefault();
+        var tabla = document.getElementById("tablacontenido");
+        var numFilas = tabla.rows.length;
+        if (numFilas > 0) {
+            var fila = tabla.rows[numFilas - 1];
+            var cantidad = parseInt(fila.cells[0].innerHTML);
+            cantidad += 1;
+            fila.cells[0].innerHTML = cantidad;
+            var precioUnitario = parseFloat(fila.cells[2].innerHTML);
+            var nuevoSubtotal = precioUnitario * cantidad;
+            fila.cells[3].innerHTML = nuevoSubtotal.toFixed(2);
+            total += precioUnitario;
+            actualizarTotal();
+        }
+
+    } else if (event.key.toLowerCase() === "c") {
+        event.preventDefault();
+        var tabla = document.getElementById("tablacontenido");
+        if (tabla.rows.length > 0) {
+            mostrarModalClave();
+    }
+
+    } else if (event.key.toLowerCase() === "p") {
+        event.preventDefault();
+        const tabla = document.getElementById("tablacontenido");
+    if (tabla.rows.length === 0) return;
+
+    cerrarVenta();
+    }
+
+    //  Listener de botón4 - Depositar
+    document.getElementById("boton4").addEventListener("click", function(){
+        depositar();
+    });
+});
