@@ -332,10 +332,63 @@ function buscarProducto(evento) {
         total = 0.00;
         document.getElementById("total").innerText = "Total: $0.00";
     }
-
-    function cierreVenta() {
+function cierreVenta() {
     const input = document.getElementById("txtcodigo");
     input.placeholder = "Ingrese pago";
     input.focus();
 }
+}
+// === Listener de botón4 ===
+document.getElementById("boton4").addEventListener("click", function(){
+    depositar();
+});
+
+// === Modal de tarjeta ===
+function depositar() {
+    const modal = document.getElementById("modal-tarjeta");
+    modal.innerHTML = `
+        <div style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+            <div style="background:white; padding:20px 30px; border-radius:10px; text-align:center; width:300px;">
+                <h3>Ingrese número de tarjeta</h3>
+                <input id="inputTarjeta" type="text" placeholder="Solo números" style="width:100%; padding:8px; font-size:16px; text-align:center;" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input id="inputTarjeta2" type="text" placeholder="confirme numero" style="width:100%; padding:8px; font-size:16px; text-align:center;" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <br><br>
+                <button id="btnAceptarTarjeta" style="background:#007bff;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;">Aceptar</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = "block";
+
+    const input = document.getElementById("inputTarjeta");
+    input.focus();
+
+    document.getElementById("btnAceptarTarjeta").onclick = function() {
+        const valor = input.value.trim();
+        const valor2 = document.getElementById("inputTarjeta2").value.trim();
+        if (valor !== valor2) {
+            alert("⚠️ Los números no coinciden.");
+            input.focus();
+            return;
+        }else if(valor.length != 16 || isNaN(valor) || valor === "" || valor2.length != 16 || isNaN(valor2) || valor2 === "") {
+            alert("⚠️ Ingrese un número de tarjeta válido.");
+            input.focus();
+            return;
+        } else if (valor === valor2){
+             let monto = prompt("Ingrese el monto a depositar (máximo $5000):");
+    monto = parseFloat(monto);
+
+    if (isNaN(monto) || monto <= 0) {
+        alert("⚠️ Monto inválido.");
+        return;
+    } else if (monto > 5000) {
+        alert("⚠️ El monto máximo permitido es $5000.");
+        return;
+    }
+
+    alert("✅ Depósito aceptado: $" + monto.toFixed(2));
+    modal.style.display = "none";
+        }
+        
+       // modal.style.display = "none";
+    };
 }
