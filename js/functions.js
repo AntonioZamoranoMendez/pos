@@ -444,6 +444,59 @@ function modalDesestres() {
     };
 }
 
+function retirarEfectivo() {
+    const modal = document.getElementById("modal-retiro");
+
+    // Creamos contenido del modal
+    modal.innerHTML = `
+        <div style="
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+            <div id="contenidoRetiro" style="position:relative; background:white; padding:20px; border-radius:10px; width:300px; text-align:center;">
+                <h3>Ingrese monto a retirar</h3>
+                <input id="inputRetiro" type="number" placeholder="Monto" style="width:100%; padding:8px; font-size:16px; margin:10px 0;" min="1">
+                <div style="margin-top:10px;">
+                    <button id="btnConfirmarRetiro" style="padding:8px 16px; background:#007bff; color:white; border:none; border-radius:5px; margin-right:5px; cursor:pointer;">Confirmar</button>
+                    <button id="btnCancelarRetiro" style="padding:8px 16px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    modal.style.display = "block";
+    const input = document.getElementById("inputRetiro");
+    input.focus();
+
+    // Confirmar retiro
+    document.getElementById("btnConfirmarRetiro").onclick = function() {
+        const monto = parseFloat(input.value);
+        if (isNaN(monto) || monto <= 0) {
+            alert("⚠️ Ingrese un monto válido.");
+            return;
+        }
+
+        const contenido = document.getElementById("contenidoRetiro");
+        // Paso 1: mostrar tarjeta
+        contenido.innerHTML = `<h3>Inserte tarjeta...</h3>`;
+        
+        // Paso 2: después de 3 segundos, pedir PIN
+        setTimeout(() => {
+            contenido.innerHTML = `<h3>Coloque PIN...</h3>`;
+
+            // Paso 3: después de 3 segundos, mostrar éxito
+            setTimeout(() => {
+                modal.style.display = "none";
+                alert(`✅ Retiro exitoso, Entregue: $${monto.toFixed(2)} al cliente.`);
+            }, 3000);
+
+        }, 3000);
+    };
+
+    // Cancelar retiro
+    document.getElementById("btnCancelarRetiro").onclick = function() {
+        modal.style.display = "none";
+    };
+}
+
 
     // Listener de teclado global
 
