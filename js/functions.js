@@ -1,6 +1,14 @@
 var total = 0.00;
 var montoDeposito = 0.00; // Variable global para almacenar el monto del depósito
 
+const CUPONES = [   // Array de Cupones
+  ["KUPON10", 0.1],
+  ["KUPON20", 0.2],
+  ["KUPON30", 0.3],
+  ["notraigonoseamalo", 0.5],
+  ["HolaDemian", 0.9]
+];
+
 const PRODUCTOS= [     // Array de Productos
   ["001", "Sabritas Clásicas", 27.45],
   ["002", "Doritos Nacho", 34.20],
@@ -363,6 +371,79 @@ function depositar() {    // Función para Depositar
         validarNumerosYMonto(valor, valor2);
     };
 }
+
+function modalCupones() {  // Función para mostrar modal de cupones
+    // Verificar si hay productos en la tabla
+    const tabla = document.getElementById("tablacontenido");
+    if (tabla.rows.length === 0) {
+        alert("⚠️ No hay productos para aplicar descuento.");
+        return;
+    }
+
+    const modal = document.getElementById("modal-cupones");
+    modal.innerHTML = `
+        <div style="
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+            <div style="background:white; padding:20px 30px; border-radius:10px; text-align:center; width:300px;">
+                <h3>Ingrese cupón de descuento</h3>
+                <input id="inputCupon" type="text" placeholder="Código" style="width:100%; padding:8px; font-size:16px; text-align:center;">
+                <br><br>
+                <button id="btnAplicarCupon" style="background:#007bff;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;">Aplicar</button>
+                <button id="btnCancelarCupon" style="background:#6c757d;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;margin-left:10px;">Cancelar</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = "block";
+
+    // Foco en input
+    document.getElementById("inputCupon").focus();
+
+    document.getElementById("btnAplicarCupon").onclick = function() {
+        const codigo = document.getElementById("inputCupon").value.trim();
+        let encontrado = false;
+        for (let i = 0; i < CUPONES.length; i++) {
+            if (CUPONES[i][0] === codigo) {
+                total = total * (1 - CUPONES[i][1]); // aplicar descuento
+                actualizarTotal();
+                alert(`✅ Cupón aplicado: ${CUPONES[i][1] * 100}% de descuento`);
+                encontrado = true;
+                break;
+            }
+        }
+        if (!encontrado) {
+            alert("❌ Cupón inválido.");
+        }
+        modal.style.display = "none";
+    };
+
+    document.getElementById("btnCancelarCupon").onclick = function() {
+        modal.style.display = "none";
+    };
+}
+
+function modalDesestres() {
+    const modal = document.getElementById("modal-cupones"); // Puedes usar otro modal si quieres
+    modal.innerHTML = `
+        <div style="
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:9999;">
+            <div style="position:relative; background:white; padding:10px; border-radius:10px;">
+                <h2>Ya casi cierras turno.. ¡tu puedes!</h2>
+                <img src="images/gatito.jpg" alt="Gatito" style="max-width:500px; max-height:80vh; display:block; ">
+                <button id="btnCerrarDesestres" style="
+                    position:absolute; top:5px; right:5px; background:#dc3545; color:white;
+                    border:none; border-radius:5px; padding:4px 10px; cursor:pointer;">X</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = "block";
+
+    document.getElementById("btnCerrarDesestres").onclick = function() {
+        modal.style.display = "none";
+    };
+}
+
 
     // Listener de teclado global
 

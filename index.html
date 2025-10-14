@@ -7,17 +7,24 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+
     <!-- Logo -->
     <img src="images/fondo1.jpg" alt="logo1" class="logoizq">
+
     <!-- Titulo --> 
     <div class="encabezado">           
             <h1 class="titulo1">El Polinesio</h1> 
             <h2 class="subtitulo">¡El verdadero Calidad, Precio!</h2>
     </div>
+
     <!-- imagen -->
     <img src="images/fondo1.jpg" alt="logo2" class="logoder">
+
+    <!-- modales -->
+     <div id="modal-cupones" style="display:none;"></div>
+     <div id="modal-desestres" style="display:none;"></div>
+
     <!-- Tabla para productos -->
-     <div id="modal-tarjeta" style="display:none;"></div>
      <div class="listaproductos">
          <table style="border:none;" id="tablalistado">
             <tr>
@@ -35,12 +42,19 @@
     <input type="text" id="txtcodigo" onkeydown="buscarProducto(event)" class="escanear" placeholder="Escanee aquí..">
      <!-- Botones -->
     <div class="botones">
-        <input type="button" id="boton1" class="btn">
-        <input type="button" id="boton2" class="btn">
+        <input type="button" id="boton1" class="btn" onclick="modalCupones()">
+        <input type="button" id="boton2" class="btn" onclick="modalDesestres()">
         <input type="button" id="boton3" class="btn">
         <input type="button" id="boton4" class="btn">
         <input type="button" id="boton5" class="btn">
         <h1 id="total" class="total">$ 0.00</h1>
+    </div>
+    <div class="textos">
+        <p class="txt1">Cupones</p>
+        <p class="txt2">Relajación</p>
+        <p class="txt3">Retiro de Efectivo</p>
+        <p class="txt4">Depósito</p>
+        <p class="txt5">Llamar a Emergencias</p>
     </div>
     <script src="js/functions.js"></script>
 </body>

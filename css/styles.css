@@ -57,12 +57,41 @@ th,h1,h2,tbody,td,tr{
 
 .listaproductos{
     font-size: x-large;
-    height: 60vh;
-    max-height: 60vh;
+    height: 50vh;
+    max-height: 50vh;
     overflow-y: auto;
     border: 1px solid black;
 
 }
+
+.textos{
+    display: flex;
+}
+
+.txt1{
+    margin-left: 30px;
+    margin-right: 70px;
+}
+
+.txt2{
+    margin-right: 30px;
+}
+
+
+.txt3{
+    margin-right: 30px;
+}
+
+
+.txt4{
+    margin-right: 30px;
+}
+
+
+.txt5{
+    margin-right: 30px;
+}
+
 
 .botones{
     display: flex;
