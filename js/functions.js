@@ -386,6 +386,23 @@ function depositar() {
     }
 
     alert("✅ Depósito aceptado: $" + monto.toFixed(2));
+     var tabla = document.getElementById("tablacontenido");
+                var renglon = tabla.insertRow();
+                var celda1 = renglon.insertCell(0);
+                var celda2 = renglon.insertCell(1);
+                var celda3 = renglon.insertCell(2);
+                var celda4 = renglon.insertCell(3);
+                celda1.style.textAlign = "center";
+                celda2.style.textAlign = "center";
+                celda3.style.textAlign = "right";
+                celda4.style.textAlign = "right";
+                celda1.innerHTML = 1;
+                celda2.innerHTML = "Depósito";
+                celda3.innerHTML = monto.toFixed(2);
+                celda4.innerHTML = monto.toFixed(2);
+                document.getElementById("txtcodigo").value = "";
+                total += monto; 
+                document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
     modal.style.display = "none";
         }
         
