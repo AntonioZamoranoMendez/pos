@@ -102,93 +102,240 @@ const productos = [
   ["100", "Salsa Valentina", 13.30]
 ];
 
-function buscarProducto(evento){
-
-    if (evento.key === "Enter"){
+function buscarProducto(evento) {
+        // agregar producto a la tabla
+    if (evento.key === "Enter") {
         var codigo = document.getElementById("txtcodigo").value;
-        if (codigo.length > 0){
+        if (codigo.length > 0) {
             var cantidad = "1";
-            if (codigo.indexOf("*") != -1 ){
+            if (codigo.indexOf("*") != -1) {
                 cantidad = codigo.split("*")[0];
                 codigo = codigo.split("*")[1];
             }
         }
 
-        for(let i = 0; i < productos.length; i ++){
-            if (productos[i][0]== codigo){
+        for (let i = 0; i < productos.length; i++) {
+            if (productos[i][0] == codigo) {
                 var tabla = document.getElementById("tablacontenido");
                 var renglon = tabla.insertRow();
                 var celda1 = renglon.insertCell(0);
                 var celda2 = renglon.insertCell(1);
                 var celda3 = renglon.insertCell(2);
                 var celda4 = renglon.insertCell(3);
-                celda1.setAttribute("style", "text-align:center;");
-                celda2.setAttribute("style", "text-align:center;");
-                celda3.setAttribute("style", "text-align:right;");
-                celda4.setAttribute("style", "text-align:right;");
+                celda1.style.textAlign = "center";
+                celda2.style.textAlign = "center";
+                celda3.style.textAlign = "right";
+                celda4.style.textAlign = "right";
                 celda1.innerHTML = cantidad;
                 celda2.innerHTML = productos[i][1];
                 celda3.innerHTML = productos[i][2];
-                celda4.innerHTML = productos[i][2] * cantidad;
+                celda4.innerHTML = (productos[i][2] * cantidad).toFixed(2);
                 document.getElementById("txtcodigo").value = "";
-                total += productos[i][2] * cantidad;
+                total += productos[i][2] * cantidad;  // por si cantidad es diferente a 1
                 document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
-                break;                
-            }            
+                break;
+            }
         }
+
     } else if (evento.key === "Escape") {
-        let borrar = document.getElementById("tablacontenido");
-
-        // Verificar que existe al menos una fila para borrar
-        if (borrar.lastChild) {
-            // Obtener el subtotal de la última fila antes de borrarla
-            var ultimaFila = borrar.lastChild;
+        let tabla = document.getElementById("tablacontenido");
+        if (tabla.rows.length > 0) {
+            var ultimaFila = tabla.rows[tabla.rows.length - 1];
             var subtotal = parseFloat(ultimaFila.cells[3].innerHTML);
-
-            // Restar el subtotal del total
             total -= subtotal;
-
-            // Borrar la fila
-            borrar.removeChild(ultimaFila);
-
-            // Actualizar total en
+            tabla.deleteRow(tabla.rows.length - 1);
             document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
-
         }
+
     } else if (evento.key === "Tab") {
-    evento.preventDefault(); // Evita que el navegador cambie de foco
+        evento.preventDefault();
+        var tabla = document.getElementById("tablacontenido");
+        var numFilas = tabla.rows.length;
+        if (numFilas > 0) {
+            var fila = tabla.rows[numFilas - 1];
+            var cantidad = parseInt(fila.cells[0].innerHTML);
+            cantidad += 1;
+            fila.cells[0].innerHTML = cantidad;
+            var precioUnitario = parseFloat(fila.cells[2].innerHTML);
+            var nuevoSubtotal = precioUnitario * cantidad;
+            fila.cells[3].innerHTML = nuevoSubtotal.toFixed(2);
+            total += precioUnitario;
+            document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
+        }
 
-    var tabla = document.getElementById("tablacontenido");
-    var numFilas = tabla.rows.length;
+    } else if (evento.key.toLowerCase() === "c") {
+        evento.preventDefault();
+        var tabla = document.getElementById("tablacontenido");
+        if (tabla.rows.length > 0) {
+            mostrarModalClave();
+        }
+    }  else if (evento.key.toLowerCase() === "p") {
+    evento.preventDefault();
+    const tabla = document.getElementById("tablacontenido");
+    if (tabla.rows.length === 0) return;
 
-    if (numFilas > 0) {
-        var fila = tabla.rows[numFilas - 1];
+    const input = document.getElementById("txtcodigo");
+    input.value = "";
+    input.placeholder = "Ingrese pago";
+    input.focus();
 
-        // Obtener y aumentar la cantidad
-        var cantidad = parseInt(fila.cells[0].innerHTML);
-        cantidad += 1;
-        fila.cells[0].innerHTML = cantidad;
+    // Escuchar una sola vez el Enter del pago
+    input.onkeypress = function (e) {
+        if (e.key === "Enter") {
+            const pago = parseFloat(input.value);
+            const totalNum = total;
 
-        // Obtener el precio unitario
-        var precioUnitario = parseFloat(fila.cells[2].innerHTML);
+            if (isNaN(pago) || pago <= 0) {
+                mostrarModalMensaje("⚠️ Ingrese un monto válido.");
+                return;
+            }
 
-        // Calcular el nuevo subtotal
-        var nuevoSubtotal = precioUnitario * cantidad;
-        fila.cells[3].innerHTML = nuevoSubtotal.toFixed(2);
+            if (pago < totalNum) {
+                mostrarModalMensaje("💰 El pago no cubre el total.");
+                return;
+            }
 
-        // Sumar el precio unitario al total
-        total += precioUnitario;
+            const cambio = (pago - totalNum).toFixed(2);
+            mostrarModalMensaje("✅ Cambio: $" + cambio);
 
-        // Actualizar el total mostrado
-        document.getElementById("total").innerText = "Total: $" + total.toFixed(2);
-    }
-
-    }
+            // Limpiar todo
+            limpiarTabla();
+            input.value = "";
+            input.placeholder = "Escanee o ingrese código";
+        }
+    };
 }
 
+    // === Modal para pedir clave ===
+    function mostrarModalClave() {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = `
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.5);display:flex;
+            justify-content:center;align-items:center;z-index:9999;
+        `;
 
+        var modal = document.createElement("div");
+        modal.style.cssText = `
+            background:white;padding:20px 30px;border-radius:10px;
+            text-align:center;font-family:sans-serif;
+        `;
 
+        modal.innerHTML = `
+            <h3>Ingrese la clave de administrador</h3>
+            <input type="password" id="inputClave" placeholder="Clave" 
+                style="padding:8px;width:250px;margin-bottom:15px;border:1px solid #ccc;border-radius:5px;text-align:center;">
+            <div>
+                <button id="btnAceptar" style="padding:8px 20px;background:#007bff;color:white;border:none;border-radius:5px;margin-right:10px;">Aceptar</button>
+                <button id="btnCancelar" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:5px;">Cancelar</button>
+            </div>
+        `;
 
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        document.getElementById("inputClave").focus();
 
+        document.getElementById("btnAceptar").onclick = function () {
+            var clave = document.getElementById("inputClave").value.trim();
+            document.body.removeChild(overlay);
+            verificarClave(clave);
+        };
 
+        document.getElementById("btnCancelar").onclick = function () {
+            document.body.removeChild(overlay);
+        };
 
+        document.getElementById("inputClave").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") document.getElementById("btnAceptar").click();
+        });
+    }
+
+    // === Verificar la clave ingresada ===
+    function verificarClave(clave) {
+        const CLAVE_CORRECTA = "123456"; // cambiar aquí
+        if (clave === CLAVE_CORRECTA) {
+            mostrarModalConfirmacion();
+        } else {
+            mostrarModalMensaje("Clave incorrecta. Intente de nuevo.");
+        }
+    }
+
+    // === Modal para confirmar cancelación ===
+    function mostrarModalConfirmacion() {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = `
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.5);display:flex;
+            justify-content:center;align-items:center;z-index:9999;
+        `;
+
+        var modal = document.createElement("div");
+        modal.style.cssText = `
+            background:white;padding:20px 30px;border-radius:10px;
+            text-align:center;font-family:sans-serif;
+        `;
+
+        modal.innerHTML = `
+            <h3>¿Desea cancelar la venta actual?</h3>
+            <div>
+                <button id="btnSi" style="padding:8px 20px;background:#dc3545;color:white;border:none;border-radius:5px;margin-right:10px;">Sí, cancelar</button>
+                <button id="btnNo" style="padding:8px 20px;background:#6c757d;color:white;border:none;border-radius:5px;">No</button>
+            </div>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        document.getElementById("btnSi").onclick = function () {
+            document.body.removeChild(overlay);
+            limpiarTabla();
+            mostrarModalMensaje("🧾 Venta cancelada correctamente.");
+        };
+
+        document.getElementById("btnNo").onclick = function () {
+            document.body.removeChild(overlay);
+        };
+    }
+
+    // === Modal simple para mostrar mensajes ===
+    function mostrarModalMensaje(texto) {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = `
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.4);display:flex;
+            justify-content:center;align-items:center;z-index:9999;
+        `;
+
+        var modal = document.createElement("div");
+        modal.style.cssText = `
+            background:white;padding:20px 30px;border-radius:10px;
+            text-align:center;font-family:sans-serif;
+        `;
+        modal.innerHTML = `
+            <p style="margin-bottom:15px;">${texto}</p>
+            <button id="btnCerrar" style="padding:6px 15px;background:#007bff;color:white;border:none;border-radius:5px;">OK</button>
+        `;
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        document.getElementById("btnCerrar").onclick = function () {
+            document.body.removeChild(overlay);
+        };
+    }
+
+    // === Limpiar tabla y total ===
+    function limpiarTabla() {
+        var tabla = document.getElementById("tablacontenido");
+        while (tabla.rows.length > 0) {
+            tabla.deleteRow(0);
+        }
+        total = 0.00;
+        document.getElementById("total").innerText = "Total: $0.00";
+    }
+
+    function cierreVenta() {
+    const input = document.getElementById("txtcodigo");
+    input.placeholder = "Ingrese pago";
+    input.focus();
+}
+}
