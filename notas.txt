@@ -1,0 +1,70 @@
+CREATE TABLE productos (
+    codigo_producto INT UNSIGNED NOT NULL PRIMARY KEY CHECK (codigo_producto > 0),
+    nombre_producto VARCHAR(255) NOT NULL CHECK (LENGTH(nombre_producto) > 0),
+    precio_producto DECIMAL(10,2) UNSIGNED NOT NULL CHECK (precio_producto > 0)
+);
+
+
+
+DELIMITER //
+CREATE TRIGGER trim_producto_insert
+BEFORE INSERT ON productos
+FOR EACH ROW
+BEGIN
+    SET NEW.nombre_producto = TRIM(NEW.nombre_producto);
+END//
+
+CREATE TRIGGER trim_producto_update
+BEFORE UPDATE ON productos
+FOR EACH ROW
+BEGIN
+    SET NEW.nombre_producto = TRIM(NEW.nombre_producto);
+END//
+DELIMITER ;
+
+
+
+INSERT INTO productos VALUES(
+    NULL,"  Panque de Chocolate ",0.00
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS ventas(
+    id_venta  INT(11) AUTO_INCREMENT PRIMARY KEY,
+    fecha_venta DATE NOT NULL,
+    hora_venta TIME NOT NULL
+);
+
+
+INSERT INTO ventas VALUES (
+    -10, NULL, NULL
+);
+
+
+CREATE TRIGGER set_fecha_venta
+BEFORE INSERT ON ventas
+FOR EACH ROW
+SET NEW.fecha_venta = IFNULL(NEW.fecha_venta, CURDATE());
+
+CREATE TRIGGER set_hora_venta
+BEFORE INSERT ON ventas
+FOR EACH ROW
+SET NEW.hora_venta = IFNULL(NEW.hora_venta, CURTIME());
+
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER ventas_id_nulo
+BEFORE INSERT ON ventas
+FOR EACH ROW
+BEGIN
+  SET NEW.id_venta = NULL;
+END$$
+
+DELIMITER ;
+
+

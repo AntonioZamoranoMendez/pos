@@ -2,9 +2,9 @@ var total = 0.00;
 var montoDeposito = 0.00; // Variable global para almacenar el monto del depósito
 
 const CUPONES = [   // Array de Cupones
-  ["KUPON10", 0.1],
-  ["KUPON20", 0.2],
-  ["KUPON30", 0.3],
+  ["KUTON10", 0.1],
+  ["KUTON20", 0.2],
+  ["KUTON30", 0.3],
   ["notraigonoseamalo", 0.5],
   ["HolaDemian", 0.9]
 ];
@@ -110,7 +110,7 @@ const PRODUCTOS= [     // Array de Productos
   ["098", "Gelatina D'Gari", 9.99],
   ["099", "Mayonesa Heinz", 25.50],
   ["100", "Salsa Valentina", 13.30],
-  ["101", "Depósito", montoDeposito]  // Código especial para depósitos
+  //["101", "Depósito", montoDeposito]  // Código especial para depósitos
 ];
 
 function buscarProducto(evento) {    // Función para cuando se escanee o escriba un código
@@ -342,7 +342,19 @@ function validarNumerosYMonto(valor, valor2) {  // Función para validar número
     }
     
     document.getElementById("modal-tarjeta").style.display = "none";
-    agregarALaTabla("101"); // Código para depósito
+    const tabla = document.getElementById("tablacontenido");
+    const fila = tabla.insertRow();
+    fila.insertCell(0).textContent = 1; // cantidad
+    fila.insertCell(1).textContent = "Depósito";
+    fila.insertCell(2).textContent = montoDeposito.toFixed(2);
+    fila.insertCell(3).textContent = montoDeposito.toFixed(2);
+    fila.cells[0].style.textAlign = "center";
+    fila.cells[1].style.textAlign = "center";
+    fila.cells[2].style.textAlign = "right";
+    fila.cells[3].style.textAlign = "right";
+
+    total += montoDeposito;
+    actualizarTotal();
 }
 
 function depositar() {    // Función para Depositar
