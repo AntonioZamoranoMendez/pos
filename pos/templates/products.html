@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Productos</title></head>
+<body>
+    <h1>Lista de productos</h1>
+    <table border="1">
+        <tr><th>Código</th><th>Nombre</th><th>Precio</th></tr>
+        {% for p in products %}
+        <tr>
+            <td>{{ p.codigo_producto }}</td>
+            <td>{{ p.nombre_producto }}</td>
+            <td>{{ p.precio_producto }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
